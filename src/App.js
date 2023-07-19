@@ -638,30 +638,30 @@ export default function App() {
           />
         </h1>
       </Hidden>
-      <button
-        style={{
-          zIndex: 10,
-          position: "absolute",
-          left: 10,
-          top: 80,
-          color: "black",
-          backgroundColor: "white",
-          width: "40px",
-          paddingBottom: "5px",
-          borderRadius: "5px",
-        }}
-      >
-        <ZoomOutMapOutlinedIcon fontSize="small" />
-      </button>
-      <ButtonGroup
-        orientation="vertical"
-        aria-label="vertical outlined button group"
-        style={{ position: "absolute", zIndex: 10, top: 115, left: 10 }}
-        size="small"
-        sx={{ width: "5px", backgroundColor: "white" }}
-      >
-        {buttons}
-      </ButtonGroup>
+      {/*<button*/}
+      {/*  style={{*/}
+      {/*    zIndex: 10,*/}
+      {/*    position: "absolute",*/}
+      {/*    left: 10,*/}
+      {/*    top: 80,*/}
+      {/*    color: "black",*/}
+      {/*    backgroundColor: "white",*/}
+      {/*    width: "40px",*/}
+      {/*    paddingBottom: "5px",*/}
+      {/*    borderRadius: "5px",*/}
+      {/*  }}*/}
+      {/*>*/}
+      {/*  <ZoomOutMapOutlinedIcon fontSize="small" />*/}
+      {/*</button>*/}
+      {/*<ButtonGroup*/}
+      {/*  orientation="vertical"*/}
+      {/*  aria-label="vertical outlined button group"*/}
+      {/*  style={{ position: "absolute", zIndex: 10, top: 115, left: 10 }}*/}
+      {/*  size="small"*/}
+      {/*  sx={{ width: "5px", backgroundColor: "white" }}*/}
+      {/*>*/}
+      {/*  {buttons}*/}
+      {/*</ButtonGroup>*/}
       <GoogleMap
         zoom={10}
         center={center}
@@ -669,8 +669,14 @@ export default function App() {
         options={{
           streetViewControl: false,
           mapTypeControl: false,
-          zoomControl: false,
-          fullscreenControl: false,
+          zoomControl: true,
+          fullscreenControl: true,
+            fullscreenControlOptions: {
+              position: window.google.maps.ControlPosition.LEFT_CENTER
+            },
+            zoomControlOptions: {
+              position: window.google.maps.ControlPosition.LEFT_CENTER
+            }
         }}
       >
           {

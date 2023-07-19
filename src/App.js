@@ -1,10 +1,8 @@
 import "./App.css";
 import {
   GoogleMap,
-  Marker,
+  MarkerF,
   useLoadScript,
-  Autocomplete,
-  StandaloneSearchBox,
 } from "@react-google-maps/api";
 import {
   Box,
@@ -25,19 +23,36 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 import SearchIcon from "@mui/icons-material/Search";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import LocationLightGreen from "./assets/images/location_light_green.png";
+import LocationBlue from "./assets/images/location_new_blue.png";
 
 export default function App() {
   const [isOpen, setIsOpen] = useState(true);
   const [isMore, setIsMore] = useState(false);
   const [responseData, setResponseData] = useState([]);
   const [responseDetailsData, setResponseDetailsData] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState(null);
   const [searchBoxDataLength, setSearchBoxDataLength] = useState(0);
   const [nearByData, setNearByData] = useState([]);
+    const [center, setCenter] = useState({
+        lat:  23.989014,
+        lng: 	90.418167,
+    })
+  const [markers, setMarkers] = useState([
+      {
+          lat:  23.989014,
+          lng:  90.418167,
+      },
+      {
+          lat:  24.069452,
+          lng:  90.222122,
+      },
+      {
+          lat:  23.911522,
+          lng: 90.388962,
+      },
+  ]);
   const [searchBoxText, setSearchBoxText] = useState("");
-  const center = {
-    lat: 23.777176,
-    lng: 90.399452,
-  };
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_PUBLIC_API_KEY,
     libraries: ["places"],
@@ -81,6 +96,9 @@ export default function App() {
       fetch(`https://api.bmapsbd.com/place/${param}`)
         .then(async (response) => {
           const parsedData = await response.json();
+          const {latitude, longitude} = parsedData
+            setSelectedLocation({lat : latitude, lng: longitude})
+            setCenter({lat : latitude, lng: longitude})
           setResponseDetailsData(parsedData);
         })
         .catch((error) => console.error("Error:", error));
@@ -113,6 +131,10 @@ export default function App() {
         .then(async (response) => {
           const parsedData = await response.json();
           setResponseDetailsData(parsedData.places[0]);
+            const {latitude, longitude} = parsedData.places[0]
+            setSelectedLocation({lat : parseFloat(latitude), lng: parseFloat(longitude)})
+            setCenter({lat : parseFloat(latitude), lng: parseFloat(longitude)})
+          setResponseData([])
         })
         .catch((error) => console.error("Error:", error));
     } else setResponseDetailsData([]);
@@ -585,7 +607,7 @@ export default function App() {
                     {nearByData.length > 0 && (
                       <div
                         className="py-2"
-                        style={{ height: "120px", overflowY: "scroll" }}
+                        style={{ height: "120px", overflowY: "scroll", maxWidth: "680px"}}
                       >
                         {nearByData.map((nData) => (
                           <div className="py-1">{nData.Address}</div>
@@ -650,9 +672,23 @@ export default function App() {
           zoomControl: false,
           fullscreenControl: false,
         }}
-        // onLoad={(map)=> setMap(map)}
       >
-        <Marker position={center} />
+          {
+              !!selectedLocation && (
+                  <MarkerF position={selectedLocation} />
+              )
+          }
+          {
+              nearByData.length > 0 && (
+                  nearByData.map((nData)=> (
+                      <div>
+                          <MarkerF position={{lat: nData.latitude, lng: nData.longitude}} options={{
+                              icon: LocationBlue
+                          }} />
+                      </div>
+                  ))
+              )
+          }
       </GoogleMap>
     </div>
   );

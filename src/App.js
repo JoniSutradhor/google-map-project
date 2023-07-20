@@ -1,9 +1,5 @@
 import "./App.css";
-import {
-  GoogleMap,
-  MarkerF,
-  useLoadScript,
-} from "@react-google-maps/api";
+import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
 import {
   Box,
   Button,
@@ -34,23 +30,23 @@ export default function App() {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [searchBoxDataLength, setSearchBoxDataLength] = useState(0);
   const [nearByData, setNearByData] = useState([]);
-    const [center, setCenter] = useState({
-        lat:  23.989014,
-        lng: 	90.418167,
-    })
+  const [center, setCenter] = useState({
+    lat: 23.989014,
+    lng: 90.418167,
+  });
   const [markers, setMarkers] = useState([
-      {
-          lat:  23.989014,
-          lng:  90.418167,
-      },
-      {
-          lat:  24.069452,
-          lng:  90.222122,
-      },
-      {
-          lat:  23.911522,
-          lng: 90.388962,
-      },
+    {
+      lat: 23.989014,
+      lng: 90.418167,
+    },
+    {
+      lat: 24.069452,
+      lng: 90.222122,
+    },
+    {
+      lat: 23.911522,
+      lng: 90.388962,
+    },
   ]);
   const [searchBoxText, setSearchBoxText] = useState("");
   const { isLoaded } = useLoadScript({
@@ -75,6 +71,41 @@ export default function App() {
     </Button>,
   ];
 
+  const nearByOptions = [
+    {
+      title: "Food",
+      value: "food",
+      isNearbySearchOption: true,
+    },
+    {
+      title: "Bank",
+      value: "bank",
+      isNearbySearchOption: true,
+    },
+    {
+      title: "Healthcare",
+      value: "healthcare",
+      isNearbySearchOption: true,
+    },
+    {
+      title: "More..",
+      value: "more",
+      isNearbySearchOption: false,
+    },
+    {
+      title: "Education",
+      value: "education",
+      isMoreOption: true,
+      isNearbySearchOption: true,
+    },
+    {
+      title: "Hotel",
+      value: "hotel",
+      isMoreOption: true,
+      isNearbySearchOption: true,
+    },
+  ];
+
   const handleSuggestionsList = (param) => {
     setSearchBoxDataLength(param?.length || 0);
     setSearchBoxText(param);
@@ -96,9 +127,9 @@ export default function App() {
       fetch(`https://api.bmapsbd.com/place/${param}`)
         .then(async (response) => {
           const parsedData = await response.json();
-          const {latitude, longitude} = parsedData
-            setSelectedLocation({lat : latitude, lng: longitude})
-            setCenter({lat : latitude, lng: longitude})
+          const { latitude, longitude } = parsedData;
+          setSelectedLocation({ lat: latitude, lng: longitude });
+          setCenter({ lat: latitude, lng: longitude });
           setResponseDetailsData(parsedData);
         })
         .catch((error) => console.error("Error:", error));
@@ -131,10 +162,13 @@ export default function App() {
         .then(async (response) => {
           const parsedData = await response.json();
           setResponseDetailsData(parsedData.places[0]);
-            const {latitude, longitude} = parsedData.places[0]
-            setSelectedLocation({lat : parseFloat(latitude), lng: parseFloat(longitude)})
-            setCenter({lat : parseFloat(latitude), lng: parseFloat(longitude)})
-          setResponseData([])
+          const { latitude, longitude } = parsedData.places[0];
+          setSelectedLocation({
+            lat: parseFloat(latitude),
+            lng: parseFloat(longitude),
+          });
+          setCenter({ lat: parseFloat(latitude), lng: parseFloat(longitude) });
+          setResponseData([]);
         })
         .catch((error) => console.error("Error:", error));
     } else setResponseDetailsData([]);
@@ -221,132 +255,107 @@ export default function App() {
         {!!responseDetailsData && (
           <div className="px-5 absolute bottom-[-150px] bg-[#2a2e43] text-white z-50">
             <div className="py-4">
-              <Typography className="text-3xl">
+              <Typography style={{ fontSize: "20px" }}>
                 {responseDetailsData.business_name}
               </Typography>
-              <Typography>{`${responseDetailsData.Address} ${responseDetailsData.area},  ${responseDetailsData.city}`}</Typography>
-              <Typography>Thana: {responseDetailsData.thana}</Typography>
-              <Typography>Destrict: {responseDetailsData.district}</Typography>
-              <Typography>Postcode: {responseDetailsData.postCode}</Typography>
-              <Typography>{responseDetailsData.subType}</Typography>
-              <Typography>Place Code : {responseDetailsData.uCode}}</Typography>
+              <Typography
+                style={{ fontSize: "15px" }}
+              >{`${responseDetailsData.Address} ${responseDetailsData.area},  ${responseDetailsData.city}`}</Typography>
+              <Typography style={{ fontSize: "15px" }}>
+                Thana: {responseDetailsData.thana}
+              </Typography>
+              <Typography style={{ fontSize: "15px" }}>
+                Destrict: {responseDetailsData.district}
+              </Typography>
+              <Typography style={{ fontSize: "15px" }}>
+                Postcode: {responseDetailsData.postCode}
+              </Typography>
+              <Typography style={{ fontSize: "15px" }}>
+                <span
+                  style={{
+                    backgroundColor: "white",
+                    color: "#00DBA0",
+                    borderRadius: "2px",
+                  }}
+                  className="px-1"
+                >
+                  {responseDetailsData.subType}
+                </span>
+              </Typography>
+              <Typography style={{ fontSize: "15px" }}>
+                Place Code :{" "}
+                <span
+                  style={{
+                    backgroundColor: "white",
+                    color: "#00DBA0",
+                    borderRadius: "2px",
+                  }}
+                  className="px-1"
+                >
+                  {responseDetailsData.uCode}
+                </span>
+              </Typography>
             </div>
             <div className="pb-2">
-              <Typography>Explore Nearby</Typography>
-              <div className="flex flex-row gap-2">
-                <Box
-                  component="span"
-                  className="cursor-pointer"
-                  sx={{
-                    border: "1px solid grey",
-                    borderRadius: "8px",
-                    paddingY: 0.5,
-                    paddingX: "15px",
-                  }}
-                  onClick={() =>
-                    exploreNearby({
-                      lat: responseDetailsData.latitude,
-                      lng: responseDetailsData.longitude,
-                      category: "food",
-                    })
-                  }
-                >
-                  Food
-                </Box>
-                <Box
-                  component="span"
-                  className="cursor-pointer"
-                  sx={{
-                    border: "1px solid grey",
-                    borderRadius: "8px",
-                    paddingY: 0.5,
-                    paddingX: "15px",
-                  }}
-                  onClick={() =>
-                    exploreNearby({
-                      lat: responseDetailsData.latitude,
-                      lng: responseDetailsData.longitude,
-                      category: "bank",
-                    })
-                  }
-                >
-                  Bank
-                </Box>
-                <Box
-                  component="span"
-                  className="cursor-pointer"
-                  sx={{
-                    border: "1px solid grey",
-                    borderRadius: "8px",
-                    paddingY: 0.5,
-                    paddingX: "15px",
-                  }}
-                  onClick={() =>
-                    exploreNearby({
-                      lat: responseDetailsData.latitude,
-                      lng: responseDetailsData.longitude,
-                      category: "healthcare",
-                    })
-                  }
-                >
-                  Healthcare
-                </Box>
-                <Box
-                  component="span"
-                  className="cursor-pointer"
-                  sx={{
-                    border: "1px solid grey",
-                    borderRadius: "8px",
-                    paddingY: 0.5,
-                    paddingX: "15px",
-                  }}
-                  onClick={() => setIsMore(!isMore)}
-                >
-                  More..
-                </Box>
-              </div>
-              {isMore ? (
-                <div className="flex flex-row gap-2 py-2">
-                  <Box
-                    component="span"
-                    className="cursor-pointer"
-                    sx={{
-                      border: "1px solid grey",
-                      borderRadius: "8px",
-                      paddingY: 0.5,
-                      paddingX: "15px",
-                    }}
-                    onClick={() =>
-                      exploreNearby({
-                        lat: responseDetailsData.latitude,
-                        lng: responseDetailsData.longitude,
-                        category: "education",
-                      })
-                    }
-                  >
-                    Education
-                  </Box>
-                  <Box
-                    component="span"
-                    className="cursor-pointer"
-                    sx={{
-                      border: "1px solid grey",
-                      borderRadius: "8px",
-                      paddingY: 0.5,
-                      paddingX: "15px",
-                    }}
-                    onClick={() =>
-                      exploreNearby({
-                        lat: responseDetailsData.latitude,
-                        lng: responseDetailsData.longitude,
-                        category: "hotel",
-                      })
-                    }
-                  >
-                    Hotel
-                  </Box>
+              <Typography style={{ fontSize: "20px" }}>
+                Explore Nearby
+              </Typography>
+                <div className="flex flex-row gap-2">
+                    {nearByOptions.map(
+                        (option) =>
+                            !option.isMoreOption && (
+                                <Box
+                                    component="span"
+                                    className="cursor-pointer"
+                                    sx={{
+                                        border: "1px solid grey",
+                                        borderRadius: "8px",
+                                        paddingY: 0.5,
+                                        paddingX: "15px",
+                                    }}
+                                    onClick={() => {
+                                        !option?.isNearbySearchOption
+                                            ? setIsMore(!isMore)
+                                            : exploreNearby({
+                                                lat: responseDetailsData.latitude,
+                                                lng: responseDetailsData.longitude,
+                                                category: option.value,
+                                            });
+                                    }}
+                                >
+                                    {option.title}
+                                </Box>
+                            )
+                    )}
                 </div>
-              ) : null}
+
+                <div className="flex flex-row gap-2 py-2">
+                    {nearByOptions.map((option) => {
+                        return option.isMoreOption && isMore ? (
+                            <Box
+                                component="span"
+                                className="cursor-pointer"
+                                sx={{
+                                    border: "1px solid grey",
+                                    borderRadius: "8px",
+                                    paddingY: 0.5,
+                                    paddingX: "15px",
+                                }}
+                                onClick={() =>
+                                    exploreNearby({
+                                        lat: responseDetailsData.latitude,
+                                        lng: responseDetailsData.longitude,
+                                        category: option.value,
+                                    })
+                                }
+                            >
+                                {option.title}
+                            </Box>
+                        ) : (
+                            ""
+                        );
+                    })}
+                </div>
             </div>
             {nearByData.length > 0 && (
               <div
@@ -490,124 +499,70 @@ export default function App() {
                         Explore Nearby
                       </Typography>
                       <div className="flex flex-row gap-2">
-                        <Box
-                          component="span"
-                          className="cursor-pointer"
-                          sx={{
-                            border: "1px solid grey",
-                            borderRadius: "8px",
-                            paddingY: 0.5,
-                            paddingX: "15px",
-                          }}
-                          onClick={() =>
-                            exploreNearby({
-                              lat: responseDetailsData.latitude,
-                              lng: responseDetailsData.longitude,
-                              category: "food",
-                            })
-                          }
-                        >
-                          Food
-                        </Box>
-                        <Box
-                          component="span"
-                          className="cursor-pointer"
-                          sx={{
-                            border: "1px solid grey",
-                            borderRadius: "8px",
-                            paddingY: 0.5,
-                            paddingX: "15px",
-                          }}
-                          onClick={() =>
-                            exploreNearby({
-                              lat: responseDetailsData.latitude,
-                              lng: responseDetailsData.longitude,
-                              category: "bank",
-                            })
-                          }
-                        >
-                          Bank
-                        </Box>
-                        <Box
-                          component="span"
-                          className="cursor-pointer"
-                          sx={{
-                            border: "1px solid grey",
-                            borderRadius: "8px",
-                            paddingY: 0.5,
-                            paddingX: "15px",
-                          }}
-                          onClick={() =>
-                            exploreNearby({
-                              lat: responseDetailsData.latitude,
-                              lng: responseDetailsData.longitude,
-                              category: "healthcare",
-                            })
-                          }
-                        >
-                          Healthcare
-                        </Box>
-                        <Box
-                          component="span"
-                          className="cursor-pointer"
-                          sx={{
-                            border: "1px solid grey",
-                            borderRadius: "8px",
-                            paddingY: 0.5,
-                            paddingX: "15px",
-                          }}
-                          onClick={() => setIsMore(!isMore)}
-                        >
-                          More..
-                        </Box>
+                        {nearByOptions.map(
+                          (option) =>
+                            !option.isMoreOption && (
+                              <Box
+                                component="span"
+                                className="cursor-pointer"
+                                sx={{
+                                  border: "1px solid grey",
+                                  borderRadius: "8px",
+                                  paddingY: 0.5,
+                                  paddingX: "15px",
+                                }}
+                                onClick={() => {
+                                  !option?.isNearbySearchOption
+                                    ? setIsMore(!isMore)
+                                    : exploreNearby({
+                                        lat: responseDetailsData.latitude,
+                                        lng: responseDetailsData.longitude,
+                                        category: option.value,
+                                      });
+                                }}
+                              >
+                                {option.title}
+                              </Box>
+                            )
+                        )}
                       </div>
-                      {isMore ? (
-                        <div className="flex flex-row gap-2 py-2">
-                          <Box
-                            component="span"
-                            className="cursor-pointer"
-                            sx={{
-                              border: "1px solid grey",
-                              borderRadius: "8px",
-                              paddingY: 0.5,
-                              paddingX: "15px",
-                            }}
-                            onClick={() =>
-                              exploreNearby({
-                                lat: responseDetailsData.latitude,
-                                lng: responseDetailsData.longitude,
-                                category: "education",
-                              })
-                            }
-                          >
-                            Education
-                          </Box>
-                          <Box
-                            component="span"
-                            className="cursor-pointer"
-                            sx={{
-                              border: "1px solid grey",
-                              borderRadius: "8px",
-                              paddingY: 0.5,
-                              paddingX: "15px",
-                            }}
-                            onClick={() =>
-                              exploreNearby({
-                                lat: responseDetailsData.latitude,
-                                lng: responseDetailsData.longitude,
-                                category: "hotel",
-                              })
-                            }
-                          >
-                            Hotel
-                          </Box>
-                        </div>
-                      ) : null}
+
+                      <div className="flex flex-row gap-2 py-2">
+                        {nearByOptions.map((option) => {
+                          return option.isMoreOption && isMore ? (
+                            <Box
+                              component="span"
+                              className="cursor-pointer"
+                              sx={{
+                                border: "1px solid grey",
+                                borderRadius: "8px",
+                                paddingY: 0.5,
+                                paddingX: "15px",
+                              }}
+                              onClick={() =>
+                                exploreNearby({
+                                  lat: responseDetailsData.latitude,
+                                  lng: responseDetailsData.longitude,
+                                  category: option.value,
+                                })
+                              }
+                            >
+                              {option.title}
+                            </Box>
+                          ) : (
+                            ""
+                          );
+                        })}
+                      </div>
                     </div>
                     {nearByData.length > 0 && (
                       <div
                         className="py-2"
-                        style={{ height: "120px", overflowY: "scroll", maxWidth: "680px"}}
+                        style={{
+                          height: "120px",
+                          overflowY: "scroll",
+                          maxWidth: "680px",
+                        }}
                       >
                         {nearByData.map((nData) => (
                           <div className="py-1">{nData.Address}</div>
@@ -671,30 +626,26 @@ export default function App() {
           mapTypeControl: false,
           zoomControl: true,
           fullscreenControl: true,
-            fullscreenControlOptions: {
-              position: window.google.maps.ControlPosition.LEFT_CENTER
-            },
-            zoomControlOptions: {
-              position: window.google.maps.ControlPosition.LEFT_CENTER
-            }
+          fullscreenControlOptions: {
+            position: window.google.maps.ControlPosition.LEFT_CENTER,
+          },
+          zoomControlOptions: {
+            position: window.google.maps.ControlPosition.LEFT_CENTER,
+          },
         }}
       >
-          {
-              !!selectedLocation && (
-                  <MarkerF position={selectedLocation} />
-              )
-          }
-          {
-              nearByData.length > 0 && (
-                  nearByData.map((nData)=> (
-                      <div>
-                          <MarkerF position={{lat: nData.latitude, lng: nData.longitude}} options={{
-                              icon: LocationBlue
-                          }} />
-                      </div>
-                  ))
-              )
-          }
+        {!!selectedLocation && <MarkerF position={selectedLocation} />}
+        {nearByData.length > 0 &&
+          nearByData.map((nData) => (
+            <div>
+              <MarkerF
+                position={{ lat: nData.latitude, lng: nData.longitude }}
+                options={{
+                  icon: LocationBlue,
+                }}
+              />
+            </div>
+          ))}
       </GoogleMap>
     </div>
   );
